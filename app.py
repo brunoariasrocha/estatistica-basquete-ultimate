@@ -9,7 +9,7 @@ def criar_banco():
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS scouts
                  (id INTEGER PRIMARY KEY AUTOINCREMENT,
-                  Data TEXT, Jogo TEXT, Jogador TEXT,
+                  Data TEXT, Jogo TEXT, Quarto TEXT, Jogador TEXT,
                   LL_T INT, LL_C INT, P2_T INT, P2_C INT, P3_T INT, P3_C INT,
                   Reb_D INT, Reb_O INT, Assi INT, Toco INT, Erros INT, Roubos INT, Faltas INT)''')
     conn.commit()
@@ -21,17 +21,18 @@ criar_banco()
 st.title("🏀 Scout Profissional de Jogo")
 
 # 1. Cabeçalho do Jogo
-col_jogo, col_data = st.columns(2)
+col_jogo, col_data, col_quarto = st.columns(3)
 with col_jogo:
     nome_jogo = st.text_input("Identificação do Jogo", placeholder="Ex: Ultimate x NTB")
 with col_data:
     data_jogo = st.date_input("Data do Jogo", datetime.now(), format="DD/MM/YYYY")
+with col_quarto:
+    quarto_jogo = st.selectbox("Período", ["1º Quarto", "2º Quarto", "3º Quarto", "4º Quarto", "Prorrogação"])
 
 # 2. LISTA MESTRA DE ATLETAS (Adicione os 50+ nomes aqui)
 elenco_completo = sorted([
-    "Nathan Brian", "Canhete", "Giba", "Wesley", "Alex", "João Pedro", 
-    "Artur", "GH", "Fernando", "Hebert", "Fabrício", "Érik", "Kaio", 
-    "Muskito", "Brunão" # ... complete a lista
+    "🏀 EQUIPE ADVERSÁRIA", "Nathan Brian", "Canhete", "Giba", "Wesley", "Alex", "João Pedro", 
+    "Artur", "GH", "Fernando", "Hebert", "Fabrício", "Érik", "Kaio", "Muskito", "Brunão"
 ])
 
 st.divider()
@@ -64,6 +65,7 @@ if jogadores_selecionados:
                 df_final = df_editado.copy()
                 df_final['Jogo'] = nome_jogo
                 df_final['Data'] = data_jogo.strftime("%d/%m/%Y")
+                df_final['Quarto'] = quarto_jogo  # <--- NOVA LINHA AQUI
                 
                 # Salva apenas quem foi selecionado
                 df_final.to_sql('scouts', conn, if_exists='append', index=False)
